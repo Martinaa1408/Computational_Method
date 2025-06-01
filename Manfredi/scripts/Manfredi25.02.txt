@@ -1,0 +1,89 @@
+'''
+Read carefuly the provided module 'exam2025.py' and write a new script
+to implemment the following requests:
+1. Import the module.
+
+2. Extend the definition of the class SubstitutionMatrix.
+
+3. The extended class should override (i.e replace) the _getitem_ method,
+creating a new one such that:
+    a. When at least one of the characters is a gap ('-'), return a fixed
+    value of -5,
+    b. In all other cases, return the corresponding values (as expected),
+    
+4. Extend the definition of the class SequencePair,
+5. The extended class should override (i.e replace) the _init_ method,
+creating a new one such that:
+    a. It tahes one parameter of type str, representing the name of a fasta file
+    (an example is provided). You can assume that the file always exists and
+    that it always contains exactly two sequences like in the example,
+    b. It initializes the attributes self.seq1 and self.seq2 with the
+    sequences in the file (you do not need to store the IDs),
+
+6. The extended class should also implement the method '_create_matrices'
+that is called. The method should compute and return the matrices F and T
+used in the Smith Waterman algorithm,
+
+7. Write a small main in ypur script to test your code. Specifically the main
+should:
+    a. Create an object of type SubstitutionMatrix, reading from the file
+    'PAM250.txt' (provided together with the module),
+    b. Create an object of type SequencePair, reading form the file 'input.fasta'
+    (provided together with the module),
+    c. Call the method smith_waterm
+'''
+
+class SubstitutionMatrix:
+    def _init_(self,filename):
+        '''Read matrix from a txt file and create a dictionary'''
+        with open(filename) as reader:
+            characters = reader.readline().split()
+            self.values = {}
+            
+            for line in reader:
+                line = line.split()
+                char1 = line[0]
+                for char2,val in zip(characters,line[1:]):
+                    self.values[char1,char2] = int(val)
+                    
+    def _getitem_(self,key):
+        '''Access the matrix with a key in the form (char1,char2)'''
+        return self.values[key]
+    
+class SequencePair:
+    def _init_(self,seq1,seq2):
+        '''Initialize object with two sequences'''
+        self.seq1 = seq1
+        self.seq2 = seq2
+        
+    def smith_waterman(self,matrix):
+        '''Compute the local alignment'''
+        F,T = self._create_matrices(matrix)
+        aln1,aln2 = '',''
+        
+        start_i, start_j, max_score = 0,0,-1
+        for i in range(len(self.seq2 + 1))
+	for j in range(len.self.seq1 + 1):
+                if F[i][j] > max_score:
+                    max_Score = F[i][j]
+                    start_i = i
+                    start_j = j
+        i = start_i
+        j = start_j
+        
+        while T[i][j] != '':
+            if T[i][j] == 'd':
+                aln1 = self.seq1[j-1] + aln1
+                aln2 = self.seq2[i-1] + aln2
+                i = i - 1
+                j = j - 1
+                
+            elif T[i][j] == 'l':
+                aln1 = self.seq1[j-1] + aln1
+                aln2 = '-' + aln2
+                j = j - 1
+            else: #T[i][j] == 'u'
+                aln1 = '-' + aln1
+                aln2 = self.seq2[i-1] + aln2
+                i = i -1
+           return aln1, aln2, max_score
