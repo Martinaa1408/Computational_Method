@@ -1,4 +1,4 @@
-# Computational_Method 💻
+# Computational_Method_for_Bioinformatics
 
 This repository collects **materials, scripts, and notebooks** related to **computational methods applied to biological data analysis**. It is structured by topic and/or instructor and includes exam exercises, lecture examples, and LaTeX-formatted notes.
 
