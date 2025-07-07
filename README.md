@@ -4,7 +4,7 @@ This repository collects **materials, scripts, and notebooks** related to **comp
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 - **Lanese/**  
   Contains exercises, scripts, and exam materials from the module by Prof. Lanese.  
@@ -21,7 +21,7 @@ This repository collects **materials, scripts, and notebooks** related to **comp
 
 ---
 
-## 📘 Topics Covered
+## Topics Covered
 
 - Python basics: `lists`, `strings`, `functions`, `file I/O`, `try-except`, and control flow
 - Sequence alignment algorithms:  
@@ -32,7 +32,7 @@ This repository collects **materials, scripts, and notebooks** related to **comp
 
 ---
 
-## 🧪 Intended Use
+## Intended Use
 
 This repository is intended for:
 - Students preparing for exams in computational biology or bioinformatics
@@ -41,27 +41,27 @@ This repository is intended for:
 
 ---
 
-## 📌 Tags
+## Tags
 
 `python` `lists` `strings` `functions` `file` `cycle` `try-except`  
 `needleman-wunsch-algorithm` `smith-waterman-algorithm` `pam250`
 
 ---
 
-## 📤 Contributions
+## Contributions
 
 This repository is part of personal exam preparation and course materials.  
 Feel free to fork it or suggest improvements via issues.
 
 ---
 
-## 🧑‍🏫 Credits
+## Credits
 
 - Materials based on coursework from professors **Ivan Lanese** and **Mattia Manfredi**
 - Maintained by [Martinaa1408](https://github.com/Martinaa1408)
 
 ---
 
-## 📜 License
+## License
 
 This repository is private and for educational purposes only. Please do not distribute without permission.
