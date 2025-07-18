@@ -1,0 +1,55 @@
+class SubstitutionMatrix:
+    def __init__(self, filename):
+        '''Read matrix from a txt file and create a dictionary'''
+        with open(filename) as reader:
+            characters = reader.readline().split()
+            self.values = {}
+
+            for line in reader:
+                line = line.split()
+                char1 = line[0]
+                for char2, val in zip(characters, line[1:]):
+                    self.values[(char1, char2)] = int(val)
+
+    def __getitem__(self, key):
+        '''Access the matrix with a key in the form (char1, char2)'''
+        return self.values[key]
+
+
+class Seqpair:
+    def __init__(self, seq1, seq2, matrix, gap):
+        self.seq1 = seq1
+        self.seq2 = seq2
+        self.matrix = matrix
+        self.gap = gap
+
+        self._create_matrices()
+        self._backtrack()
+
+    def _create_matrices(self):
+        self.F = [[0]]
+        self.T = [['']]
+        self.score_best_aln = 0
+        self.starting_position = (0, 0)
+
+    def _backtrack(self):
+        i, j = self.starting_position
+        aln1 = []
+        aln2 = []
+
+        while self.T[i][j]!='':
+            direction = self.T[i][j]
+            if direction == 'diag':
+                aln1.append(self.seq1[i - 1])
+                aln2.append(self.seq2[j - 1])
+                i -= 1
+                j -= 1
+            elif direction == 'up':
+                aln1.append(self.seq1[i - 1])
+                aln2.append('-')
+                i -= 1
+            else:
+                aln1.append('-')
+                aln2.append(self.seq2[j - 1])
+                j -= 1
+
