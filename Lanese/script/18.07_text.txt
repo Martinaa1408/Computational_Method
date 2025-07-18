@@ -25,9 +25,7 @@ The file name to be used to read and/or write is provided as command line parame
 
 Sample execution (with parameter daily_activities.txt):
 
-pgsql
-Copy
-Edit
+
 ===== Daily Activity Manager =====
 1. Add a new activity  
 2. Print all activities  
