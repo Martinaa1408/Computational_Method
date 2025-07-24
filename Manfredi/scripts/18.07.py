@@ -4,7 +4,10 @@ from A_exam_text import SubstitutionMatrix, SequencePair
 
 # Estensione della classe SequencePair
 class MySequencePair(SequencePair):
-
+    
+    def __init__(self,seq1,seq2,matrix,gap):
+        super().__init__(seq1,seq2,matrix,gap)
+        
     def _create_matrices(self):
         '''Smith-Waterman local alignment: compute F and T matrices'''
         n = len(self.seq2) + 1  # righe
