@@ -1,0 +1,51 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                     SUPERMARKET BILL GENERATOR HOMEWORK                      ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  OBJECTIVE:                                                                  ║
+║  Create a Python program that generates a supermarket bill by reading        ║
+║  product information from a file and processing customer purchases.          ║
+║                                                                              ║
+║  REQUIREMENTS:                                                               ║
+║                                                                              ║
+║  INPUT FILE:                                                                 ║
+║  Create a text file named `products.txt` with the following format:          ║
+║    - Each line represents one product                                        ║
+║    - Format: `code,product_name,price`                                       ║
+║    - Example:                                                                ║
+║        A001,Apple,1.50                                                       ║
+║        A002,Banana,0.75                                                      ║
+║        A003,Milk,3.25                                                        ║
+║        A004,Bread,2.50                                                       ║
+║        A005,Eggs,4.00                                                        ║
+║                                                                              ║
+║  PROGRAM REQUIREMENTS:                                                       ║
+║  1. Read product information from the file `products.txt`                    ║
+║  2. Ask the user to input product codes and quantities                       ║
+║  3. Validate user input (check if codes exist, quantities are positive)      ║
+║  4. Generate a formatted bill showing:                                       ║
+║     - Product names, Quantities, Individual prices, Total prices per product ║
+║     - Overall total                                                          ║
+║  5. Display the bill on screen                                               ║
+║  6. Save the bill to a file named `bill.txt`                                 ║
+║                                                                              ║
+║                                                                              ║
+║  EXAMPLE OUTPUT:                                                             ║
+║  ┌────────────────────────────────────────────────────────────────────────┐  ║
+║  │                         SUPERMARKET BILL                               │  ║
+║  │======================================================================│ ║  ║
+║  │Item                  Qty        Price      Total                     │ ║  ║
+║  │----------------------------------------------------------------------│ ║  ║ 
+║  │Apple                 3          $1.50      $4.50                     │ ║  ║
+║  │Milk                  2          $3.25      $6.50                     │ ║  ║
+║  │Eggs                  1          $4.00      $4.00                     │ ║  ║
+║  │----------------------------------------------------------------------│ ║  ║
+║  │TOTAL                                $15.00                           │ ║  ║
+║  │======================================================================│ ║  ║
+║  └────────────────────────────────────────────────────────────────────────┘  ║
+║                                                                              ║
+║  SUBMISSION:                                                                 ║
+║  Submit your Python code file (.py) and ensure it works with the sample      ║
+║  `products.txt` file provided above.                                         ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
