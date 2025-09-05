@@ -1,0 +1,97 @@
+'''
+Read carefully the provided module "A_exam_text.py" and write a new script to implement the following requests:
+1. Import the module;
+
+2. Extend the definition of the class SequencePair;
+
+3. Create a new method called "_backtracking":
+    a. The method takes in input a pair of integers representing a starting position for performing the backtracking
+    b. The method returns two strings representing the aligned sequences computed by the backtracking procedure.
+
+4. Create a new method called "align":
+    a. The method takes in input the name of a file containing a substitution matrix, a gap penalty, and an algorithm ("nw" for Needleman-Wunsch, "sw" for Smith-Waterman);
+    b. The method performs the necessary steps to compute the alignment between the two sequences, given the choices of parameters;
+    c. The method returns the two aligned sequences and their corresponding score;
+
+5. Write a small main in your script to test your code, comparing the results of the Needleman-Wunsch and Smith-Waterman algorithms:
+    a. Suggested values for testing: first sequence "AAAAACCAACCAAAAA", second sequence "RRRRCCCCRRRR", gap penalty of -5;
+    b. A file called "PAM250.txt" containing a substitution matrix that can be used to test the code is provided with this text.
+        
+
+Suggestion: Before implementing your new class, it is important to understand how the one provided in this script works. You can try to instantiate a SequencePair object to test its methods.
+'''
+
+class SequencePair:
+    def __init__(self, seq1, seq2):
+        '''Initialize object'''
+        self.seq1 = seq1
+        self.seq2 = seq2
+        self.F = None
+        self.T = None
+    
+    def _read_sub_matrix(self, sub_matrix_file):
+        '''Read matrix from a txt file and return a dictionary'''
+        with open(sub_matrix_file) as reader:
+            characters = reader.readline().split()
+            sub_matrix = {}
+            
+            for line in reader:
+                line = line.split()
+                char1 = line[0]
+                for char2,val in zip(characters, line[1:]):
+                    sub_matrix[char1, char2] = int(val)
+        return sub_matrix
+    
+    def _create_matrices(self, sub_matrix_file, gap, algorithm):
+        '''Create matrices F and T'''
+        # Read matrix from file
+        sub_matrix = self._read_sub_matrix(sub_matrix_file)
+        
+        # Create empty matrices
+        self.F, self.T = [], []
+        for i in range(len(self.seq2) + 1):
+            self.F.append([])
+            self.T.append([])
+            for j in range(len(self.seq1) + 1):
+                self.F[i].append(0)
+                self.T[i].append('X')
+        
+        # Initialize first row and col for NW
+        if algorithm == "nw":
+            for i in range(1, len(self.seq2) + 1):
+                self.F[i][0], self.T[i][0] = self.F[i - 1][0] + gap, '|'
+            for j in range(1, len(self.seq1) + 1):
+                self.F[0][j], self.T[0][j] = self.F[0][j - 1] + gap, '-'
+        
+        # Fill each cell
+        for i in range(1, len(self.seq2) + 1):
+            for j in range(1, len(self.seq1) + 1):
+                top = self.F[i - 1][j] + gap, '|'
+                left = self.F[i][j - 1] + gap, '-'
+                diagonal = self.F[i - 1][j - 1] + sub_matrix[self.seq2[i - 1], self.seq1[j - 1]], '\\'
+                zero = 0, 'X'
+                if algorithm == "nw":
+                    self.F[i][j], self.T[i][j] = max(top, left, diagonal)
+                else:
+                    self.F[i][j], self.T[i][j] = max(top, left, diagonal, zero)
+    
+    def _print_matrices(self):
+        '''Print nicely the matrices F and T to check their values'''
+        if self.F is None or self.T is None:
+            print("Matrices F and T not computed. Please call the method '_create_matrices' before calling this method")
+            print()
+            return
+        
+        for row in self.F:
+            print_row = []
+            for el in row:
+                print_row.append('{:>3}'.format(str(el)))
+            print(' '.join(print_row))
+        print()
+        
+        for row in self.T:
+            print_row = []
+            for el in row:
+                print_row.append('{:>3}'.format(el))
+            print(' '.join(print_row))
+        print()
