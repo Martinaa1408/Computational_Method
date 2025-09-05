@@ -1,0 +1,6 @@
+Q86XN6
+Q96NG5
+Q9HBT8
+Q9NY84
+Q9UI25
+grep "sp" f1.fasta | cut -d "|" -f 2 | sort -R | head -n 5 | sort

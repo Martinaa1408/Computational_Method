@@ -1,0 +1,5 @@
+number of sequences with 0 are:
+9478
+number of sequences with 1 are:
+2112
+command used: echo number of sequences with 0 are:>exercise_4.txt; grep -c ",0," train.csv >> exercise_4.txt;echo number of sequences with 1 are:>>exercise_4.txt; grep -c ",1," train.csv >> exercise_4.txt
