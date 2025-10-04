@@ -1,10 +1,9 @@
 # Computational_Method_for_Bioinformatics
 
 [![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![Data Structures](https://img.shields.io/badge/Data_Structures-008080?logo=databricks&logoColor=white)](https://en.wikipedia.org/wiki/Data_structure)
-[![Linux Commands](https://img.shields.io/badge/Linux_Commands-FCC624?logo=linux&logoColor=black)](https://en.wikipedia.org/wiki/Linux_commands)
-[![Sequence Alignment](https://img.shields.io/badge/Sequence_Alignment_Algorithms-FF1493?logo=dna&logoColor=white)](https://en.wikipedia.org/wiki/Sequence_alignment)
-[![Biology](https://img.shields.io/badge/Biology-228B22?logo=leaflet&logoColor=white)](https://en.wikipedia.org/wiki/Biology)
+[![Data Structures](https://img.shields.io/badge/Data_Structures-008080?logo=databricks&logoColor=white)](https://www.geeksforgeeks.org/python/python-data-types/)
+[![Linux Commands](https://img.shields.io/badge/Linux_Commands-FCC624?logo=linux&logoColor=black)](https://www.geeksforgeeks.org/linux-unix/introduction-to-linux-operating-system/)
+[![Sequence Alignment](https://img.shields.io/badge/Sequence_Alignment_Algorithms-FF1493?logo=dna&logoColor=white)](https://betanet.net/view-post/advanced-sequence-alignment-the)
 
 
 This repository collects **materials, scripts, and notebooks** related to **computational methods applied to biological data analysis**. It is structured by topic and/or instructor and includes exam exercises, lecture examples, and LaTeX-formatted notes.
