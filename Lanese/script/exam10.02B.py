@@ -17,7 +17,9 @@ from sys import argv
 
 def read_numbers(filename):
     f = open(filename, "r")
-    line = f.readline().strip()
+    line = ""
+    for l in f:
+        line = l.strip()
     f.close()
 
     parts = line.split()
