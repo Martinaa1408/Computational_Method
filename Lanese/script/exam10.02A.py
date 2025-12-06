@@ -15,13 +15,9 @@ def comma_separated_numbers():
         return None
     parts = line.split(',')
     numbers = []
-
     for p in parts:
-        p = p.strip()
-        if p == "":
-            continue
-        n = int(p)
-        numbers.append(n)
+        numbers.append(int(p))
+        
     return numbers
 
 
