@@ -15,58 +15,59 @@
 
 from sys import argv
 
-def read_numbers(input_file):
-    """Reads a line of numbers from the input file and returns a list of integers."""
-    try:
-        file = open(input_file, "r")
-        line = file.readline().strip()
-        file.close()
+def read_numbers(filename):
+    f = open(filename, "r")
+    line = f.readline().strip()
+    f.close()
 
-        parts = line.split()
-        numbers = []
-        for num in parts:
-            try:
-                numbers.append(int(num))
-            except ValueError:
-                print('Error: invalid line.')
-        return numbers
+    parts = line.split()
+    numbers = []
 
-    except FileNotFoundError:
-        print('Error: input file not found.')
-        exit(1)
+    for p in parts:
+        numbers.append(int(p))
 
-def guess_game():
-    """Handles the game logic: reads the file, generates possible sums, and prompts user guesses."""
+    return numbers
+
+
+def main():
     if len(argv) != 2:
-        print("Usage: python script.py input_file")
-        exit(1)
+        print("Usage: python script.py <input_file>")
+        return
 
-    input_file = argv[1]
-    numbers = read_numbers(input_file)
-
-    print("Guess the sum of two numbers from the file!")
+    filename = argv[1]
+    numbers = read_numbers(filename)
 
     possible_sums = []
     for i in range(len(numbers)):
         for j in range(i + 1, len(numbers)):
-            print(i, j)
-            possible_sums.append(numbers[i] + numbers[j])
+            s = numbers[i] + numbers[j]
+            possible_sums.append(s)
+
+    min_sum = possible_sums[0]
+    max_sum = possible_sums[0]
+
+    for v in possible_sums:
+        if v < min_sum:
+            min_sum = v
+        if v > max_sum:
+            max_sum = v
 
     while True:
+        guess_str = input("Enter a number: ")
         try:
-            guess = int(input("Enter a number: "))
-        except ValueError:
-            print("Error: please enter an integer.")
+            guess = int(guess_str)
+        except:
+            print("Please enter an integer.")
             continue
 
         if guess in possible_sums:
-            print("You win!")
+            print("You win")
             break
-        elif guess > max(possible_sums):
-            print("Upper!")
-        elif guess < min(possible_sums):
-            print("Lower!")
+        elif guess < min_sum:
+            print("lower")
+        elif guess > max_sum:
+            print("upper")
         else:
-            print("Try again!")
+            print("try again")
 
-guess_game()
+main()
