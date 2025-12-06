@@ -38,118 +38,84 @@ Current Text: python prog
 """
 from sys import argv
 
-# Carica le parole esistenti dal file
 def load_words(fname):
     words = []
-    try:
-        f = open(fname, 'r')
-        for line in f:
-            line = line.strip()
-            if line != '':
-                words.append(line)
-        f.close()
-    except:
-        print("Errore nel caricamento.")
-        exit(1)
+    f = open(fname, "r")
+    for line in f:
+        line = line.strip()
+        if line != "":
+            words.append(line)
+    f.close()
     return words
 
-# Aggiungi una parola nuova al file
-def append_word(fname, word):
-    try:
-        f = open(fname, 'a')
-        f.write(word + '\n')
-        f.close()
-    except:
-        print("Errore nel salvataggio.")
+def save_word(fname, w):
+    f = open(fname, "a")
+    f.write(w + "\n")
+    f.close()
 
-# Controlla se una parola inizia con un prefisso
-def is_prefix(pre, word):
-    if len(pre) > len(word):
+def is_prefix(pre, w):
+    if len(pre) > len(w):
         return False
-    i = 0
-    while i < len(pre):
-        if pre[i] != word[i]:
+    for i in range(len(pre)):
+        if pre[i] != w[i]:
             return False
-        i = i + 1
     return True
 
-# Loop principale
-def autocomplete(words, fname):
-    text = []
-    while True:
-        print("Enter word or prefix (empty to exit):", end=' ')
-        pre = input().strip().lower()
-        if pre == "":
-            break
-
-        found = False
-        i = 0
-        while i < len(words):
-            if words[i] == pre:
-                found = True
-            i = i + 1
-
-        if found:
-            print("Added:", pre)
-            text.append(pre)
-        else:
-            suggestions = []
-            i = 0
-            while i < len(words):
-                if is_prefix(pre, words[i]):
-                    suggestions.append(words[i])
-                i = i + 1
-
-            if len(suggestions) > 0:
-                print("Suggestions:")
-                i = 0
-                while i < len(suggestions):
-                    print(str(i+1) + ". " + suggestions[i])
-                    i = i + 1
-                print("Choose number, 'p'=propose, 'd'=discard:", end=' ')
-                choice = input().strip().lower()
-                if choice == 'd':
-                    continue
-                elif choice == 'p':
-                    if pre not in words:
-                        words.append(pre)
-                        append_word(fname, pre)
-                    text.append(pre)
-                else:
-                    is_num = True
-                    i = 0
-                    while i < len(choice):
-                        if choice[i] < '0' or choice[i] > '9':
-                            is_num = False
-                        i = i + 1
-                    if is_num:
-                        num = int(choice)
-                        if num >= 1 and num <= len(suggestions):
-                            word = suggestions[num - 1]
-                            print("Added:", word)
-                            text.append(word)
-                        else:
-                            print("Invalid number.")
-                    else:
-                        print("Invalid input.")
-            else:
-                print("No match. Add '" + pre + "'? (y/n):", end=' ')
-                yn = input().strip().lower()
-                if yn == 'y':
-                    words.append(pre)
-                    append_word(fname, pre)
-                    text.append(pre)
-                else:
-                    print("Discarded.")
-        print("Current text:", ' '.join(text))
-
-# Entry point
 def main():
-    if len(argv) != 2:
-        print("Uso: python autocomplete.py words.txt")
-        exit(1)
     fname = argv[1]
     words = load_words(fname)
-    autocomplete(words, fname)
+    text = []
+
+    while True:
+        p = input("word/prefix (empty=exit): ").strip()
+        if p == "":
+            break
+
+        if p in words:
+            text.append(p)
+            print("Added:", p)
+            print("Text:", " ".join(text))
+            continue
+
+
+        suggestions = []
+        for w in words:
+            if is_prefix(p, w):
+                suggestions.append(w)
+
+
+        if len(suggestions) > 0:
+            print("Suggestions:")
+            for i in range(len(suggestions)):
+                print(i+1, suggestions[i])
+
+            c = input("number / p=prefix / d=discard: ").strip().lower()
+
+            if c == "d":
+                continue
+            elif c == "p":
+                words.append(p)
+                save_word(fname, p)
+                text.append(p)
+            else:
+                try:
+                    n = int(c)
+                    chosen = suggestions[n-1]
+                    text.append(chosen)
+                except:
+                    print("Invalid")
+                    continue
+
+   
+        else:
+            a = input("Add to dictionary? (y/n): ").strip().lower()
+            if a == "y":
+                words.append(p)
+                save_word(fname, p)
+                text.append(p)
+            else:
+                print("Discarded.")
+
+        print("Text:", " ".join(text))
 
 main()
