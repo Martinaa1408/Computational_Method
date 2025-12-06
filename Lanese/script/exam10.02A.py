@@ -9,7 +9,23 @@
 #-3,8,1     0
 from sys import argv
 
-def count_pairs_above_threshold(numbers, threshold):
+def comma_separated_numbers():
+    line = input('Enter numbers separated by comma (empty to stop): ').strip()
+    if line == "":
+        return None
+    parts = line.split(',')
+    numbers = []
+
+    for p in parts:
+        p = p.strip()
+        if p == "":
+            continue
+        n = int(p)
+        numbers.append(n)
+    return numbers
+
+
+def product_over_threshold(numbers, threshold):
     count = 0
     for i in range(len(numbers)):
         for j in range(i + 1, len(numbers)):
@@ -17,45 +33,27 @@ def count_pairs_above_threshold(numbers, threshold):
                 count += 1
     return count
 
-def pairs_integers():
-    if len(sys.argv) != 3:
-        print("Uso: python script.py output_file threshold")
-        sys.exit(1)
-    
-    output_file = sys.argv[1]
-    try:
-        threshold = int(sys.argv[2])
-    except ValueError:
-        print("Errore: la soglia deve essere un numero intero.")
-        sys.exit(1)
-    
-    try:
-        writer = open(output_file, 'a')
-        while True:
-            line = input("Inserisci numeri separati da virgola (oppure premi invio per terminare): ").strip()
-            if not line:
-                break
-            
-            numbers = []
-            elements = line.split(',')
-            for num in elements:
-                num = num.strip()
-                try:
-                    numbers.append(int(num))
-                except ValueError:
-                    print("Errore: Inserisci solo numeri separati da virgola.")
-                    numbers = []  # Svuota la lista per non scrivere nulla
-                    break
-            
-            if numbers:
-                count = count_pairs_above_threshold(numbers, threshold)
-                writer.write(str(count) + '\n')
-                print("Coppie con prodotto sopra", threshold, ":", count)
-        
-        writer.close()
-        print("Risultati aggiunti al file", output_file)
-    
-    except Exception as e:
-        print("Errore durante l'elaborazione:", str(e))
 
-pairs_integers()
+def write_file():
+    if len(argv) != 3:
+        print("Usage: python script.py <threshold> <output_file>")
+        return
+    threshold = int(argv[1])
+    filename = argv[2]
+    f = open(filename, 'w')
+    while True:
+        try:
+            numbers = comma_separated_numbers()
+        except ValueError:
+            print("Please enter only integers.")
+            continue
+        if numbers is None:
+            break
+        count = product_over_threshold(numbers, threshold)
+        f.write(str(count))
+        f.write("\n")
+    f.close()
+
+def main():
+    write_file()
+main()
