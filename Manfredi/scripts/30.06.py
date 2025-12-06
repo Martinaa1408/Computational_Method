@@ -4,7 +4,7 @@ class Seq(SequencePair):
         '''Recupera l’allineamento locale a partire dalla cella (i, j), restituendo anche lo score'''
         aligned1 = ''
         aligned2 = ''
-        score = self.F[i][j]  # Salva il punteggio dell’allineamento locale
+        score = self.F[i][j]
         while self.T[i][j] != '':
             if self.T[i][j] == 'd':
                 aligned1 += self.seq1[j - 1]
