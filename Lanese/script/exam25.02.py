@@ -19,58 +19,90 @@
 #2 5
 #4 6 9
 from sys import argv
-def main(input_file, outputmin_file, outputmax_file, option):
-  '''the function main take teh file and option as arguments, and analyze each case in order to collect the list max and min'''
-  for line in input_file:
-    line=line.split()
-    max_list=[]
-    min_list=[]
-    #first element
-    if int(line[0])>int(line[1]):
-      max_list.append(line[0])
-    elif int(line[0])<int(line[1]):
-      min_list.append(line[0])
-    #central elements
-    for pos in range(1,len(line)-1)):
-      if int(line[pos])>int(line[pos-1]) and int(line[pos])>int(line[pos+1]):
-        max_list.append(line[pos])
-      elif int(line[pos])<int(line[pos-1]) and int(line[pos])<int(line[pos+1]):
-        min_list.append(line[pos])
-    #last element
-    if int(line[-1])>int(line[-2]):
-      max_list.append(line[-1])
-    elif int(line[-1])<int(line[-2]):
-      min_list.append(line[-1])
 
-    max_list=''.join(max_list)
-    min_list=''.join(min_list)
+def main(input_file, output_min, output_max, option):
 
-    #option case
-    if option=='MIN':
-      outputmin_file.write(str(min_list)+'\n')
-    elif option=='MAX':
-      outputmax_file.write(str(max_list)+'\n')
-    else option=='BOTH':
-      outputmin_file.write(str(min_list)+'\n')
-      outputmax_file.write(str(max_list)+'\n')
-    
+    for raw_line in input_file:
+        raw_line = raw_line.strip()
+
+        if raw_line == "":
+            if option == "MIN" or option == "BOTH":
+                output_min.write("\n")
+            if option == "MAX" or option == "BOTH":
+                output_max.write("\n")
+            continue
+
+        parts = raw_line.split()
+        nums = []
+
+        for p in parts:
+            nums.append(int(p))
+
+        min_list = []
+        max_list = []
+
+        # -------- FIRST ELEMENT --------
+        if nums[0] < nums[1]:
+            min_list.append(nums[0])
+        elif nums[0] > nums[1]:
+            max_list.append(nums[0])
+
+        # -------- CENTRAL ELEMENTS --------
+        for pos in range(1, len(nums) - 1):
+            if nums[pos] < nums[pos - 1] and nums[pos] < nums[pos + 1]:
+                min_list.append(nums[pos])
+            elif nums[pos] > nums[pos - 1] and nums[pos] > nums[pos + 1]:
+                max_list.append(nums[pos])
+
+        # -------- LAST ELEMENT --------
+        if nums[-1] < nums[-2]:
+            min_list.append(nums[-1])
+        elif nums[-1] > nums[-2]:
+            max_list.append(nums[-1])
+
+        # Convert numbers to string
+        min_line = ""
+        max_line = ""
+
+        for x in min_list:
+            min_line += str(x) + " "
+
+        for x in max_list:
+            max_line += str(x) + " "
+
+        min_line = min_line.strip()
+        max_line = max_line.strip()
+
+        # -------- OPTION HANDLING --------
+        if option == "MIN":
+            output_min.write(min_line + "\n")
+
+        elif option == "MAX":
+            output_max.write(max_line + "\n")
+
+        else:   # BOTH
+            output_min.write(min_line + "\n")
+            output_max.write(max_line + "\n")
+
+
 def file():
-''' this function analyze the errors and explain the file'''
-try:
-  option=input('Enter MAX,MIN,BOTH:')
-  input_file=open(argv[1],'r')
-  output_min=open(argv[2],'w')
-  output_max=open(argv[3],'w')
-  main(input_file,output_min,output_max,option)
-except FileNotFoundError:
-  print('File not found')
-except IndexError:
-  print('Not enough arguments')
-  
-file()
-    
-### in the console you write python3 exam25.02.py input_file_name outputmin_file_name outputmax_file_name
-### insert an option: MIN/MAX/BOTH
-### the result print on the file
+    """Gestisce apertura file e errori."""
+    try:
+        option = input("Enter MIN, MAX, BOTH: ").strip().upper()
 
-      
+        input_file = open(argv[1], "r")
+        output_min = open("min.txt", "w")
+        output_max = open("max.txt", "w")
+
+        main(input_file, output_min, output_max, option)
+
+        input_file.close()
+        output_min.close()
+        output_max.close()
+
+    except FileNotFoundError:
+        print("File not found.")
+    except IndexError:
+        print("Usage: python script.py <input_file>")
+
+file()
