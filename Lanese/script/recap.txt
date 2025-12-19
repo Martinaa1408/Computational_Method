@@ -1,0 +1,123 @@
+###############################################################################
+# GUIDA DEFINITIVA AL CODING IN PYTHON: LOGICA, TIPI E STRUTTURE DATI
+# (Versione Ampliata per Esami di Bioinformatica e Modelli Stocastici)
+###############################################################################
+
+===============================================================================
+1. LE STRINGHE: PARSING E VALIDAZIONE RIGOROSA
+===============================================================================
+
+Le stringhe sono l'input standard (file, tastiera). Trattale come "forma" prima 
+che come "contenuto".
+
+* REGOLA DEL BISTURI (.split()):
+  Usa lo split per rompere il blocco. 
+  Esempio: "01/01/2000".split('/') -> ['01', '01', '2000']
+  ERRORE DA EVITARE: Dimenticare che .split() restituisce sempre una LISTA di 
+  STRINGHE. Anche se vedi numeri, sono ancora testo!
+
+* REGOLA DELLA LUNGHEZZA FISSA (len()):
+  In Bioinformatica il formato è tutto. Se il compito chiede "dd/mm/yyyy":
+  - len(giorno) deve essere == 2.
+  - Se len(giorno) è 1 (es. "1"), è un errore di formato.
+  - TRUCCO: Controlla la lunghezza PRIMA di convertire in int().
+
+* REGOLA DELLO SLICING [start:stop]:
+  Usa lo slicing se i caratteri sono in posizioni fisse (es. coordinate o orari).
+  - stringa[0:2] -> primi due caratteri.
+  - stringa[-1] -> l'ultimo carattere (utilissimo per i segni o direzioni N/S/E/W).
+
+===============================================================================
+2. LA MATEMATICA E I TIPI: EVITARE IL TYPEERROR
+===============================================================================
+
+Python è "fortemente tipizzato": non mescola mele (stringhe) con pere (interi).
+
+* LA TRAPPOLA DELLA CONCATENAZIONE:
+  - CORRETTO: "Risultato: " + str(10) -> "Risultato: 10"
+  - ERRORE: "Risultato: " + 10 -> CRASH (TypeError).
+  - TRUCCO: Quando scrivi su file, converti TUTTO in str().
+
+* DIVISIONE INTERA (//) vs CLASSICA (/):
+  - / restituisce sempre un float (es. 5/2 = 2.5).
+  - // restituisce un intero (es. 5//2 = 2).
+  - ERRORE DA EVITARE: Usare / per un indice di una lista.
+    Esempio: lista[5/2] -> CRASH. Usa sempre lista[5//2].
+
+* IL BLOCCO TRY...EXCEPT:
+  Usa questo blocco ogni volta che usi int(). Se l'input è "0A", il programma
+  non morirà, ma eseguirà il codice sotto 'except'.
+  TRUCCO: Usalo per gestire i "dati sporchi" nei file d'esame.
+
+===============================================================================
+3. LISTE E LISTE DI LISTE (MATRICI)
+===============================================================================
+
+Qui si decide il voto dell'esame. La gestione della memoria è fondamentale.
+
+* APPEND vs CONCATENAZIONE (+):
+  - lista.append(x): inserisce x come singolo elemento alla fine.
+  - lista + [x, y]: crea una nuova lista unendo le due.
+  - ERRORE: lista.append([1, 2]) dentro un loop spesso crea liste annidate 
+    non volute.
+
+* MATRICI (Allineamento Sequenze):
+  NON creare mai una matrice così: matrice = [[0]*n]*m.
+  PERCHÉ? Perché Python copia il riferimento alla riga. Se cambi una cella,
+  cambiano tutte le celle della stessa colonna!
+  TRUCCO (La List Comprehension): 
+  matrice = [[0 for j in range(cols)] for i in range(rows)]
+  Questo crea ogni riga come oggetto indipendente in memoria.
+
+
+
+===============================================================================
+4. LOGICA DEI CONFRONTI E CICLI
+===============================================================================
+
+* CONFRONTI TRA TIPI DIVERSI:
+  - "10" > 2 -> CRASH.
+  - int("10") > 2 -> True.
+  - TRUCCO: Assicurati di aver convertito entrambi i lati del confronto allo 
+    stesso tipo.
+
+* CICLI ANNIDATI (COPPIE):
+  Per confrontare ogni elemento con i successivi (senza ripetizioni):
+  for i in range(len(lista)):
+      for j in range(i + 1, len(lista)):
+          # qui lavori su lista[i] e lista[j]
+  TRUCCO: Partire da i + 1 nel secondo ciclo evita di confrontare un elemento 
+  con se stesso o di contare due volte la stessa coppia (A-B e B-A).
+
+
+
+* MINIMI/MASSIMI LOCALI (I BORDI):
+  Quando confronti un elemento con il precedente (i-1) e il successivo (i+1):
+  - Il primo elemento NON ha un precedente.
+  - L'ultimo elemento NON ha un successivo.
+  TRUCCO: Gestisci i bordi separatamente (if i == 0 o if i == len-1) oppure 
+  usa dei valori "sentinella" come float('inf').
+
+===============================================================================
+5. DIZIONARI: IL TRUCCO DEL .GET()
+===============================================================================
+
+I dizionari sono fondamentali per contare occorrenze (es. supermercato o 
+frequenze amminoacidiche).
+
+* ERRORE: KeyError se provi a leggere una chiave che non esiste.
+* SOLUZIONE: dizionario.get(chiave, 0).
+  Se la chiave non c'è, ti restituisce 0 invece di crashare.
+  Esempio: conteggio[prodotto] = conteggio.get(prodotto, 0) + 1
+
+
+
+===============================================================================
+CHECKLIST FINALE "ANTI-ERRORE"
+===============================================================================
+1. [ ] Ho tolto il carattere di newline con .strip()?
+2. [ ] Ho controllato la lunghezza della stringa prima di convertirla?
+3. [ ] Ho usato // invece di / per gli indici?
+4. [ ] La mia matrice è creata con una list comprehension?
+5. [ ] Ho convertito tutto in str() prima di stamparlo o scriverlo su file?
+###############################################################################
