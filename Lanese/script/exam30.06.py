@@ -38,84 +38,69 @@ Current Text: python prog
 """
 from sys import argv
 
-def load_words(fname):
-    words = []
-    f = open(fname, "r")
-    for line in f:
-        line = line.strip()
-        if line != "":
-            words.append(line)
-    f.close()
-    return words
-
-def save_word(fname, w):
-    f = open(fname, "a")
-    f.write(w + "\n")
-    f.close()
-
-def is_prefix(pre, w):
-    if len(pre) > len(w):
-        return False
-    for i in range(len(pre)):
-        if pre[i] != w[i]:
-            return False
-    return True
-
 def main():
-    fname = argv[1]
-    words = load_words(fname)
-    text = []
+    input_file = open(argv[1], 'r')
+    words = []
 
+    for line in input_file:
+        parts = line.strip().lower().split(',')   
+        for p in parts:
+            p = p.strip()                         # " program" -> "program"
+            if p != '':
+                words.append(p)
+
+    input_file.close()
+
+    print(words)
+
+    current_txt = []
     while True:
-        p = input("word/prefix (empty=exit): ").strip()
-        if p == "":
+        user = input('Enter word or prefix (empty to exit): ').strip().lower()
+        if user == '':
+            print('Goodbye')
             break
 
-        if p in words:
-            text.append(p)
-            print("Added:", p)
-            print("Text:", " ".join(text))
-            continue
-
-
-        suggestions = []
-        for w in words:
-            if is_prefix(p, w):
-                suggestions.append(w)
-
-
-        if len(suggestions) > 0:
-            print("Suggestions:")
-            for i in range(len(suggestions)):
-                print(i+1, suggestions[i])
-
-            c = input("number / p=prefix / d=discard: ").strip().lower()
-
-            if c == "d":
-                continue
-            elif c == "p":
-                words.append(p)
-                save_word(fname, p)
-                text.append(p)
-            else:
-                try:
-                    n = int(c)
-                    chosen = suggestions[n-1]
-                    text.append(chosen)
-                except:
-                    print("Invalid")
-                    continue
-
-   
+        if user in words:
+            current_txt.append(user)
+            print('Added:', user)
         else:
-            a = input("Add to dictionary? (y/n): ").strip().lower()
-            if a == "y":
-                words.append(p)
-                save_word(fname, p)
-                text.append(p)
+            suggestions=[]
+            for w in words:
+                if w[:len(user)]==user:
+                    suggestions.append(w)
+                    print(suggestions)
+            if len(suggestions)>0:
+                print('Suggestions:')
+                for i in range(len(suggestions)):
+                    print(str(i+1),suggestions[i])
+                choice=input('Choose (number), p (proposed), d (discard): ').strip().lower()
+                if choice=='d':
+                    print('discarded')
+                    continue
+                elif choice=='p':
+                    current_txt.append(user)
+                    print('added',user)
+                    if user not in words:
+                        words.append(user)
+                else:
+                    index=int(choice)-1
+                    chosen=suggestions[index]
+                    current_txt.append(chosen)
+                    print('added',chosen)
             else:
-                print("Discarded.")
+                choice=input('not found. added to a text (y/n)?').strip().lower()
+                if choice=='y':
+                    current_txt.append(user)
+                    print('added',user)
+                    if user not in words:
+                        words.append(user)
+    output_file = open(argv[1], 'w')
+    for w in words:
+        output_file.write(w + "\n")
+    output_file.close()
 
-        print("Text:", " ".join(text))
-
+    print("Current Text:", " ".join(current_txt))
 main()
+#THREE CASE: words that is equal to the words in the file; prefix of this words, and nothing ''
+
+
