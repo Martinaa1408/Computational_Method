@@ -1,120 +1,49 @@
+'''
+Write a python program that takes a source file containing in each line an arithmetic integer
+expression with only sums and subtractions, and computes the results. The name of the
+source file is taken as command line parameter. If there is an additional command line
+parameter then this is the name of the file where the results will be written, otherwise the
+results are printed on the screen.
+Input
+34+12-2
+10-23+1
+100+3+12+2
+2
+Output
+34+12-2=44
+10-23+1=-12
+100+3+12+2=117
+2=2   '''
 from sys import argv
 
-def read_lines(filename):
-    """Reads all lines of the file and returns a list of lists of integers."""
-    try:
-        file = open(filename, "r")
-        lines = []
-        for line in file:
-            line = line.strip()
-            parts = line.split()
-            numbers = []
-            for item in parts:
-                numbers.append(int(item))  # conversione elemento per elemento
-            lines.append(numbers)
-        file.close()
-        return lines
-    except FileNotFoundError:
-        print("Error: file not found.")
-        exit(1)
 
-def check_sum_pairs():
-    """For each line, asks user input and checks if two elements sum up to that number."""
-    if len(argv) != 2:
-        print("Usage: python script.py inputfile")
-        exit(1)
+file_inp = open(argv[1], 'r')
 
-    lines = read_lines(argv[1])
+operator = '+-'
+numbers = '0123456789'
+results = ""
 
-    for line in lines:
-        print("Line:", line)
-        try:
-            n = int(input("Enter a number: "))
-        except ValueError:
-            print("Invalid input. Please enter an integer.")
-            continue
+for line in file_inp:
+    parts = ''.join(line.strip().split())
 
-        found = False
-        for i in range(len(line)):
-            for j in range(i + 1, len(line)):
-                if line[i] + line[j] == n:
-                    found = True
-                    break  # esce dal ciclo interno
-            if found:
-                break  # esce anche dal ciclo esterno
+    tot = 0
+    num = ""
+    sign = 1
 
-        print(found)
+    for el in parts:
+        if el in numbers:
+            num += el
+        elif el in operator:
+            tot += sign * int(num)
+            num = ""
+            if el == '+':
+                sign = 1
+            else:
+                sign = -1
 
-# Avvia il programma
-check_sum_pairs()
+    tot += sign * int(num)
 
+    results += parts + "=" + str(tot) + "\n"
 
-------------------------------------------------------------------------------------------------
-
-
-from sys import argv  # Per leggere i parametri da riga di comando
-
-def computation_sum(expr):
-    """
-    Data una stringa con + e - (es. "34+12-2"),
-    calcola il risultato aritmetico.
-    """
-    numbers = "0123456789"
-    operations = "+-"
-    list_numbers = []         # Lista dei numeri estratti
-    list_operations = []      # Lista dei simboli + o -
-    temp = ""                 # Costruisce i numeri cifra per cifra
-
-    for char in expr:
-        if char in numbers:
-            temp += char      # Accumula il numero
-        elif char in operations:
-            list_numbers.append(int(temp))     # Aggiunge il numero alla lista
-            list_operations.append(char)       # Aggiunge l’operazione alla lista
-            temp = ""         # Resetta per costruire il prossimo numero
-
-    list_numbers.append(int(temp))  # Aggiunge l’ultimo numero rimasto
-
-    result = list_numbers[0]        # Parte dal primo numero
-
-    # Applica tutte le operazioni una alla volta
-    for i in range(len(list_operations)):
-        if list_operations[i] == "+":
-            result += list_numbers[i + 1]
-        elif list_operations[i] == "-":
-            result -= list_numbers[i + 1]
-
-    return result
-
-
-def process_lines(source_file, output_file=None):
-    """
-    Legge ogni riga del file sorgente, calcola il risultato e
-    lo scrive nel file di output oppure lo stampa.
-    """
-    for line in source_file:
-        line = line.strip()  # Rimuove \n e spazi
-        result = computation_sum(line)
-        full_line = line + "=" + str(result)
-
-        if output_file:
-            output_file.write(full_line + "\n")
-        else:
-            print(full_line)
-
-
-# MAIN PROGRAM
-if __name__ == "__main__":
-    if len(argv) == 3:
-        # Due argomenti: input + output file
-        with open(argv[1], "r") as source_file:
-            with open(argv[2], "w") as output_file:
-                process_lines(source_file, output_file)
-
-    elif len(argv) == 2:
-        # Solo input file → stampa sullo schermo
-        with open(argv[1], "r") as source_file:
-            process_lines(source_file)
-
-    else:
-        print("Usage: python script.py input_file [output_file]")
+file_inp.close()
+print(results)
