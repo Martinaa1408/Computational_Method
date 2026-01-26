@@ -1,91 +1,90 @@
 from sys import argv
 
-def read_file(filename):
-    rubrica = []
-    with open(filename) as f:
-        for line in f:
-            line = line.strip()
-            if line == "":
-                continue
-            parts = line.split()
-            nome = parts[0]
-            numero = parts[1]
-            rubrica.append((nome, numero))
-    return rubrica
+# 1) LETTURA FILE
+input_file = open(argv[1], 'r')
+rubric = []
 
-def cerca_prefisso(rubrica, pref):
-    risultati = []
-    for nome, numero in rubrica:
-        if nome.startswith(pref):
-            risultati.append((nome, numero))
-    return risultati
+for line in input_file:
+    parts = line.strip().lower().split()
+    if parts != []:
+        name = parts[0]
+        number = parts[1]          # lascialo stringa (meglio di int)
+        rubric.append((name, number))
 
-def aggiungi_contatto(rubrica):
-    nome = input("Nome: ").strip()
-    numero = input("Numero: ").strip()
-    for n, _ in rubrica:
-        if n == nome:
-            print("Errore: esiste gia' un contatto con questo nome.")
-            return
-    rubrica.append((nome, numero))
-    print("Contatto aggiunto.")
+input_file.close()
 
-def modifica_numero(rubrica):
-    nome = input("Nome da modificare: ").strip()
-    nuovo = input("Nuovo numero: ").strip()
-    for i, (n, num) in enumerate(rubrica):
-        if n == nome:
-            rubrica[i] = (nome, nuovo)
-            print("Numero aggiornato.")
-            return
-    print("Nessun contatto con questo nome.")
+current_text = []
 
-def salva(filename, rubrica):
-    with open(filename, "w") as f:
-        for nome, numero in rubrica:
-            f.write(nome + " " + numero + "\n")
-    print("Rubrica salvata su", filename)
+while True:
+    user = input('Enter name or prefix (empty to exit): ').strip().lower()
+    if user == '':
+        print('Bye bye')
+        break
 
-def main():
-    if len(argv) < 2:
-        print("Uso: python rubrica.py rubrica.txt")
-        return
-
-    filename = argv[1]
-    rubrica = read_file(filename)
-
-    while True:
-        print("\n--- RUBRICA ---")
-        print("1. Cerca contatto per prefisso")
-        print("2. Aggiungi nuovo contatto")
-        print("3. Modifica numero")
-        print("4. Salva su file")
-        print("5. Esci")
-        scelta = input("Scelta: ").strip()
-
-        if scelta == "1":
-            pref = input("Prefisso nome: ").strip()
-            ris = cerca_prefisso(rubrica, pref)
-            if not ris:
-                print("Nessun contatto trovato.")
-            else:
-                for nome, numero in ris:
-                    print(nome, "->", numero)
-
-        elif scelta == "2":
-            aggiungi_contatto(rubrica)
-
-        elif scelta == "3":
-            modifica_numero(rubrica)
-
-        elif scelta == "4":
-            salva(filename, rubrica)
-
-        elif scelta == "5":
+    # CASE A: exact name exists
+    found = False
+    for (name, number) in rubric:
+        if user == name:
+            print('Found:', name, number)
+            current_text.append(name)
+            found = True
             break
 
-        else:
-            print("Scelta non valida.")
+    if found:
+        print('Current Searches:', " ".join(current_text))
+        continue
 
-if __name__ == "__main__":
-    main()
+    # CASE B: prefix suggestions
+    suggestions = []
+    for (name, number) in rubric:
+        if name[:len(user)] == user:
+            suggestions.append((name, number))
+
+    if len(suggestions) > 0:
+        print('Suggestions:')
+        for i in range(len(suggestions)):
+            print(str(i+1) + ".", suggestions[i][0], suggestions[i][1])  # nome e numero stessa riga
+
+        choice = input("Choose a suggestion (number), or 'p' for the proposed name, or 'd' to discard: ").strip().lower()
+
+        if choice == 'd':
+            print('Discarded.')
+
+        elif choice == 'p':
+            # add the prefix as a new contact with UNKNOWN
+            current_text.append(user)
+            print('Added new name:', user, 'UNKNOWN')
+
+            exists = False
+            for (name, number) in rubric:
+                if name == user:
+                    exists = True
+                    break
+            if not exists:
+                rubric.append((user, 'UNKNOWN'))
+
+        else:
+            try:
+                idx = int(choice) - 1
+                chosen = suggestions[idx]
+                print('Selected:', chosen[0], chosen[1])
+                current_text.append(chosen[0])
+            except:
+                print('Invalid choice.')
+
+    # CASE C: not found
+    else:
+        choice = input('Not found. Add new contact? (y/n): ').strip().lower()
+        if choice == 'y':
+            number = input('Enter phone number: ').strip()
+            rubric.append((user, number))
+            current_text.append(user)
+            print('Added:', user, number)
+
+    print('Current Searches:', " ".join(current_text))
+
+# 3) UPDATE FILE
+output_file = open(argv[1], 'w')
+for (name, number) in rubric:
+    output_file.write(name + " " + str(number) + "\n")
+output_file.close()
