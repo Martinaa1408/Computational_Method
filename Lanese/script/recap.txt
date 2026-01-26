@@ -1,123 +1,435 @@
-###############################################################################
-# GUIDA DEFINITIVA AL CODING IN PYTHON: LOGICA, TIPI E STRUTTURE DATI
-# (Versione Ampliata per Esami di Bioinformatica e Modelli Stocastici)
-###############################################################################
+PYTHON — PALESTRA ESAMI (logica + debugging + trucchetti) — FORMATO .txt
+=====================================================================
 
-===============================================================================
-1. LE STRINGHE: PARSING E VALIDAZIONE RIGOROSA
-===============================================================================
+Obiettivo:
+- Allenarti sugli errori tipici: casi separati, input/output, contatori, stringhe vs liste,
+  file, argv, dizionari, set, list comprehension, debugging.
+- Esercizi “da esame”: consegna + vincoli + test mentali + trucchetti.
 
-Le stringhe sono l'input standard (file, tastiera). Trattale come "forma" prima 
-che come "contenuto".
+REGOLE D’ORO (da rileggere prima di iniziare)
+---------------------------------------------
+R1) Mai distruggere l’input originale. Se ti serve una versione “trasformata”, fai una copia.
+R2) Stringhe sono immutabili: se devi cambiare singoli caratteri → usa lista di char.
+R3) Prima distingui i CASI, poi scrivi la logica (len==1 vs len>1, valido vs non valido).
+R4) Contatori: conta l’EVENTO (es. un input) non l’EFFETTO (es. quante lettere trovate).
+R5) Un loop = un ruolo. Se un while fa 2 cose, stai creando bug.
+R6) Una variabile = un concetto. Se cambia tipo/ruolo a metà programma, è un segnale rosso.
+R7) Prima fai passare i casi-limite: vuoto, 1 elemento, input sporco, file con righe vuote.
 
-* REGOLA DEL BISTURI (.split()):
-  Usa lo split per rompere il blocco. 
-  Esempio: "01/01/2000".split('/') -> ['01', '01', '2000']
-  ERRORE DA EVITARE: Dimenticare che .split() restituisce sempre una LISTA di 
-  STRINGHE. Anche se vedi numeri, sono ancora testo!
+TRUCCHI E MINI-CHEATSHEET (usa quando serve)
+--------------------------------------------
+Input:
+- s = input().strip()     # toglie spazi ai lati
+- s.upper() / s.lower()   # normalizza confronti
+- if not s:               # stringa vuota
 
-* REGOLA DELLA LUNGHEZZA FISSA (len()):
-  In Bioinformatica il formato è tutto. Se il compito chiede "dd/mm/yyyy":
-  - len(giorno) deve essere == 2.
-  - Se len(giorno) è 1 (es. "1"), è un errore di formato.
-  - TRUCCO: Controlla la lunghezza PRIMA di convertire in int().
+Split & parse:
+- parts = s.split()       # split su spazi multipli
+- parts = s.split(',')    # split su virgola
+- nums = [int(p) for p in parts if p!='']   # list comprehension con filtro
+- try/except ValueError per conversioni
 
-* REGOLA DELLO SLICING [start:stop]:
-  Usa lo slicing se i caratteri sono in posizioni fisse (es. coordinate o orari).
-  - stringa[0:2] -> primi due caratteri.
-  - stringa[-1] -> l'ultimo carattere (utilissimo per i segni o direzioni N/S/E/W).
+File:
+- for line in f:          # leggi riga per riga
+- line = line.strip()
+- if not line: continue   # salta righe vuote
 
-===============================================================================
-2. LA MATEMATICA E I TIPI: EVITARE IL TYPEERROR
-===============================================================================
+Dizionari:
+- d.get(key, default)
+- if key in d:
+- d[key] = d.get(key, 0) + 1   # conteggi (frequenze)
 
-Python è "fortemente tipizzato": non mescola mele (stringhe) con pere (interi).
+Set:
+- seen = set()
+- if x in seen: ...
+- seen.add(x)                  # duplicati
 
-* LA TRAPPOLA DELLA CONCATENAZIONE:
-  - CORRETTO: "Risultato: " + str(10) -> "Risultato: 10"
-  - ERRORE: "Risultato: " + 10 -> CRASH (TypeError).
-  - TRUCCO: Quando scrivi su file, converti TUTTO in str().
+Enumerate / range:
+- for i, x in enumerate(lst):
+- for i in range(1, len(lst)-1):   # “interni” senza estremi
 
-* DIVISIONE INTERA (//) vs CLASSICA (/):
-  - / restituisce sempre un float (es. 5/2 = 2.5).
-  - // restituisce un intero (es. 5//2 = 2).
-  - ERRORE DA EVITARE: Usare / per un indice di una lista.
-    Esempio: lista[5/2] -> CRASH. Usa sempre lista[5//2].
+Min/Max e accumuli:
+- total += x
+- best = None; if best is None or x>best: best=x
+- (oppure best = max(best, x) se best inizializzato)
 
-* IL BLOCCO TRY...EXCEPT:
-  Usa questo blocco ogni volta che usi int(). Se l'input è "0A", il programma
-  non morirà, ma eseguirà il codice sotto 'except'.
-  TRUCCO: Usalo per gestire i "dati sporchi" nei file d'esame.
+Formattazione:
+- print(f"{x:.2f}")  # 2 decimali
+- oppure format(x, ".2f")
 
-===============================================================================
-3. LISTE E LISTE DI LISTE (MATRICI)
-===============================================================================
+DEBUG RAPIDO (mini-protocollo)
+------------------------------
+D0) Riproduci il bug con un input minimo (il più piccolo che fallisce).
+D1) Stampa variabili chiave PRIMA e DOPO un punto critico (input, contatori, liste).
+D2) Controlla i tipi: print(type(x), x)
+D3) Controlla i confini: range, indici, len.
+D4) Controlla “immutabilità”: replace non cambia in-place.
+D5) Controlla dove incrementi contatori: deve essere legato all’evento.
+D6) Se non capisci: riscrivi i casi in 3 righe e rifai la struttura if/elif/else.
 
-Qui si decide il voto dell'esame. La gestione della memoria è fondamentale.
+=====================================================================
+SEZIONE A — DEBUGGING (trova e correggi)
+=====================================================================
 
-* APPEND vs CONCATENAZIONE (+):
-  - lista.append(x): inserisce x come singolo elemento alla fine.
-  - lista + [x, y]: crea una nuova lista unendo le due.
-  - ERRORE: lista.append([1, 2]) dentro un loop spesso crea liste annidate 
-    non volute.
+A1) BUG: replace non funziona
+----------------------------
+Codice:
+  s = "a+b+c"
+  s.replace("+", "-")
+  print(s)
+Domanda:
+- Perché non cambia? Correggi in 1 riga.
 
-* MATRICI (Allineamento Sequenze):
-  NON creare mai una matrice così: matrice = [[0]*n]*m.
-  PERCHÉ? Perché Python copia il riferimento alla riga. Se cambi una cella,
-  cambiano tutte le celle della stessa colonna!
-  TRUCCO (La List Comprehension): 
-  matrice = [[0 for j in range(cols)] for i in range(rows)]
-  Questo crea ogni riga come oggetto indipendente in memoria.
+A2) BUG: confronto con lista invece che stringa
+-----------------------------------------------
+Codice:
+  word = list("CLASSROOM")
+  guess = input().strip().upper()
+  if guess == word:
+      print("ok")
+Domanda:
+- Perché non entra mai? Correggi.
 
+A3) BUG: contatore incrementato nel posto sbagliato
+---------------------------------------------------
+Codice:
+  tries = 0
+  for ch in "ABCA":
+      if ch == "A":
+          tries += 1
+  print("tries", tries)
+Domanda:
+- Qui tries conta “cose trovate”, non “tentativi”.
+  Riscrivi un esempio dove tries conta i tentativi (input utente) e non le occorrenze.
 
+A4) BUG: lettura file chiusa troppo presto
+------------------------------------------
+Codice:
+  f = open(argv[1])
+  for line in f:
+      print(line.strip())
+      f.close()
+Domanda:
+- Spiega il bug e correggi.
 
-===============================================================================
-4. LOGICA DEI CONFRONTI E CICLI
-===============================================================================
+A5) BUG: split + strip
+----------------------
+Input: "  1, 2,  3  "
+Codice:
+  parts = s.split(',')
+  nums = [int(p) for p in parts]
+Domanda:
+- Perché può dare errore? Correggi senza try/except.
 
-* CONFRONTI TRA TIPI DIVERSI:
-  - "10" > 2 -> CRASH.
-  - int("10") > 2 -> True.
-  - TRUCCO: Assicurati di aver convertito entrambi i lati del confronto allo 
-    stesso tipo.
+A6) BUG: lista condivisa per righe
+----------------------------------
+Codice:
+  rows = []
+  current = []
+  for line in f:
+      for x in line.split():
+          current.append(int(x))
+      rows.append(current)
+Domanda:
+- Perché rows diventa una lista di copie “uguali” riferite alla stessa lista?
+  Correggi.
 
-* CICLI ANNIDATI (COPPIE):
-  Per confrontare ogni elemento con i successivi (senza ripetizioni):
-  for i in range(len(lista)):
-      for j in range(i + 1, len(lista)):
-          # qui lavori su lista[i] e lista[j]
-  TRUCCO: Partire da i + 1 nel secondo ciclo evita di confrontare un elemento 
-  con se stesso o di contare due volte la stessa coppia (A-B e B-A).
+A7) BUG: condizione logica sbagliata (and/or)
+---------------------------------------------
+Consegna: “se il mese non è tra 1 e 12 → errore”
+Codice sbagliato:
+  if month < 1 and month > 12:
+      print("error")
+Domanda:
+- Perché è sempre false? Correggi e spiega.
 
+A8) BUG: if vuoto dopo split
+----------------------------
+Codice:
+  parts = line.strip().split()
+  if parts == "":
+      continue
+Domanda:
+- Perché non funziona? Correggi.
 
+A9) BUG: indice fuori range
+---------------------------
+Codice:
+  for i in range(len(lst)):
+      if lst[i] > lst[i+1]:
+          ...
+Domanda:
+- Quando esplode? Correggi il range.
 
-* MINIMI/MASSIMI LOCALI (I BORDI):
-  Quando confronti un elemento con il precedente (i-1) e il successivo (i+1):
-  - Il primo elemento NON ha un precedente.
-  - L'ultimo elemento NON ha un successivo.
-  TRUCCO: Gestisci i bordi separatamente (if i == 0 o if i == len-1) oppure 
-  usa dei valori "sentinella" come float('inf').
+A10) BUG: upper() mancante
+--------------------------
+Consegna: confronta input con "Y" o "N"
+Codice:
+  ans = input().strip()
+  if ans == "Y": ...
+Domanda:
+- Perché fallisce con "y"? Correggi.
 
-===============================================================================
-5. DIZIONARI: IL TRUCCO DEL .GET()
-===============================================================================
+=====================================================================
+SEZIONE B — MINI LOGICA (20-30 righe, stile esame)
+=====================================================================
 
-I dizionari sono fondamentali per contare occorrenze (es. supermercato o 
-frequenze amminoacidiche).
+B1) Coppie sopra soglia
+-----------------------
+Input: riga con numeri separati da spazio (da input()).
+Output: quante coppie (i<j) hanno prodotto > soglia (da argv[1]).
+Vincoli:
+- senza funzioni
+- gestisci riga vuota → termina
 
-* ERRORE: KeyError se provi a leggere una chiave che non esiste.
-* SOLUZIONE: dizionario.get(chiave, 0).
-  Se la chiave non c'è, ti restituisce 0 invece di crashare.
-  Esempio: conteggio[prodotto] = conteggio.get(prodotto, 0) + 1
+B2) Local min/max (file → 2 file)
+---------------------------------
+Da file argv[1] con interi (anche su più righe).
+Scrivi su argv[2] tutti i local_min, su argv[3] tutti i local_max.
+Definizione:
+- local_max: a[i] > a[i-1] e a[i] > a[i+1]
+- local_min: a[i] < a[i-1] e a[i] < a[i+1]
+Casi-limite:
+- inizio/fine: considera anche a[0] e a[-1] con un solo vicino.
 
+B3) Run-length encoding (stringa)
+---------------------------------
+Input: una stringa.
+Output: compressione tipo A3B1C2 (conta ripetizioni consecutive).
+Esempio: "AAABCC" -> "A3B1C2"
+Vincoli:
+- niente regex
+- attenzione stringa vuota
 
+B4) Validazione data (gg/mm/aaaa)
+---------------------------------
+Input: data "dd/mm/yyyy"
+Output: "OK" oppure "INVALID"
+Regole:
+- mese 1..12
+- giorno in base al mese (considera febbraio=28, ignora bisestile)
+Trucco:
+- lista days_in_month = [31,28,31,...]
+Errori tipici:
+- and/or sbagliato, indici sballati, conversioni
 
-===============================================================================
-CHECKLIST FINALE "ANTI-ERRORE"
-===============================================================================
-1. [ ] Ho tolto il carattere di newline con .strip()?
-2. [ ] Ho controllato la lunghezza della stringa prima di convertirla?
-3. [ ] Ho usato // invece di / per gli indici?
-4. [ ] La mia matrice è creata con una list comprehension?
-5. [ ] Ho convertito tutto in str() prima di stamparlo o scriverlo su file?
-###############################################################################
+B5) Normalizza testo e conta parole
+-----------------------------------
+Input: riga testo
+Output: dizionario (stampato) con frequenze parole, case-insensitive.
+Punteggiatura da rimuovere: . , ; : ! ?
+Suggerimento:
+- sostituisci punteggiatura con spazio, poi split.
+Vincoli:
+- dizionario con d.get()
+
+B6) Prefissi (rubrica semplificata)
+-----------------------------------
+Carica da file: "nome numero" per riga.
+Poi loop input:
+- se input vuoto: fine
+- se input match esatto: stampa contatto
+- se input è prefisso di uno o più nomi: stampa lista candidati
+- se nessun match: stampa "not found"
+Bonus:
+- usa startswith
+- nomi in minuscolo normalizzati
+
+=====================================================================
+SEZIONE C — FILE + ARGV (classiconi d’esame)
+=====================================================================
+
+C1) Filtra righe per lunghezza
+------------------------------
+argv[1]=input.txt argv[2]=out.txt argv[3]=k
+Scrivi su out le righe con len(strip) >= k
+Salta righe vuote.
+(Attenzione: k è stringa → int)
+
+C2) Somma per riga
+-----------------
+Da file argv[1] con numeri per riga (spazi).
+Scrivi su argv[2] la somma di ogni riga, una per riga.
+Se una riga ha token non numerici → ignora quel token (senza crash).
+
+C3) Top-1 parola più frequente
+------------------------------
+Da file testo argv[1], trova la parola più frequente (case-insensitive),
+stampa parola e conteggio.
+Suggerimento:
+- dizionario conteggi + max su items()
+
+C4) Merge di due file (tipo join)
+---------------------------------
+File A: "id valoreA"
+File B: "id valoreB"
+Stampa righe: "id valoreA valoreB" solo per id presenti in entrambi.
+Suggerimento:
+- carica B in dizionario
+
+C5) Controllo duplicati
+-----------------------
+Da file argv[1] con parole, una per riga.
+Stampa solo le parole ripetute (una sola volta ciascuna).
+Suggerimento:
+- set seen, set printed
+
+=====================================================================
+SEZIONE D — DIZIONARI/SET (quando semplifica)
+=====================================================================
+
+D1) Primo non ripetuto
+----------------------
+Input: lista di interi.
+Output: primo elemento che compare una sola volta, oppure "None".
+Suggerimento:
+- dizionario frequenze poi seconda passata.
+
+D2) Anagrammi
+-------------
+Input: due parole.
+Output: "YES" se sono anagrammi (stesse lettere e conteggi), altrimenti "NO".
+Suggerimento:
+- conta frequenze (dict) oppure sorted()
+
+D3) Intersezione e differenza
+-----------------------------
+Input: due righe con parole.
+Output:
+- parole comuni
+- parole solo nella prima
+- parole solo nella seconda
+Suggerimento:
+- set(a.split()) ecc.
+
+D4) Rubrica con aggiornamento
+-----------------------------
+File iniziale: "nome numero"
+Loop:
+- input nome (vuoto=stop)
+- se esiste: stampa numero
+- se non esiste: chiedi numero e aggiungi in dict
+Alla fine salva su file output (argv[2]).
+Suggerimento:
+- dict + scrittura finale.
+
+=====================================================================
+SEZIONE E — LIST COMPREHENSION (quando conviene / quando no)
+=====================================================================
+
+E1) Trasforma con filtro
+------------------------
+Dato input: "1,2,x,3,,4"
+Crea lista numeri ignorando token vuoti e non numerici.
+Versione A: senza try/except (usa p.isdigit() con attenzione ai negativi)
+Versione B: con try/except
+
+E2) Quadrati pari
+-----------------
+Dato lst di interi:
+crea lista dei quadrati dei soli pari.
+- in comprehension: [x*x for x in lst if x%2==0]
+
+E3) Flatten (una lista da liste)
+--------------------------------
+Dato matrix = [[1,2],[3],[4,5,6]]
+crea flat = [1,2,3,4,5,6]
+- comprehension annidata: [x for row in matrix for x in row]
+
+E4) Quando NON usare comprehension
+---------------------------------
+Stesso esercizio di E1 ma devi stampare un messaggio di errore per ogni token
+non valido → qui meglio un for classico.
+
+=====================================================================
+SEZIONE F — “TRUCCHI DA ESAME” (mini-task)
+=====================================================================
+
+F1) startswith + best match
+--------------------------
+Hai una lista di nomi.
+Input: prefisso.
+Output: lista di tutti i nomi che iniziano col prefisso (case-insensitive).
+Bonus: se lista vuota stampa "none".
+
+F2) Trova massimo con indice
+----------------------------
+Dato lst, stampa max e posizione (indice).
+Attenzione: se più max, prendi il primo.
+Suggerimento:
+- best = lst[0], best_i=0; for i in range(1,len(lst))...
+
+F3) Lettura robusta righe vuote
+-------------------------------
+Da file: righe con numeri e righe vuote.
+Crea lista interi ignorando vuote.
+(Errore tipico: confrontare lista con "")
+
+F4) Slicing pratico
+-------------------
+Dato lst, stampa:
+- primi 3
+- ultimi 3
+- tutti tranne primo e ultimo
+- elementi in posizione pari
+- lista al contrario
+(usa slicing, non for)
+
+F5) “and/or” trap
+-----------------
+Scrivi una funzione (o solo condizione) che controlla:
+- numero tra 10 e 20 inclusi
+Spiega perché (x>=10 and x<=20) e non or.
+
+=====================================================================
+SEZIONE G — MINI ESAMI (consegne complete)
+=====================================================================
+
+G1) Cash desk mini (supermercato)
+---------------------------------
+File prodotti: "code name price"
+Loop:
+- input code (0=stop)
+- se code valido: chiedi quantità, accumula
+- se code non esiste: stampa "unknown"
+Alla fine: stampa scontrino e totale, e scrivi su file output.
+Focus:
+- dict code -> (name, price)
+- contatore quantità per code
+- attenzione conversioni e input sporco
+
+G2) Registro voti
+-----------------
+File: "studente voto"
+Costruisci:
+- media per studente
+- media totale
+- studente con media più alta
+Output su stdout e su file.
+Focus:
+- dict studente -> (somma, count)
+
+G3) Hangman schema + round (core)
+---------------------------------
+Per ogni parola del file:
+- stampa schema (+ per vocali, - consonanti, ? altro)
+- input: lettera singola o guess parola intera
+- se guess errato: "Nice try! ... but wrong..." e continua
+- se guess corretto: "You win! In X tries!"
+- poi chiedi Y/N per round successivo
+Focus:
+- non distruggere parola
+- text come lista
+- tries: 1 input = 1 try
+
+=====================================================================
+COME USARLO (metodo pratico)
+----------------------------
+Step 1) Scegli 1 esercizio di debugging (Sez A) + 1 mini logica (Sez B) al giorno.
+Step 2) Per ogni esercizio, prima scrivi i CASI in 3 righe.
+Step 3) Solo dopo scrivi codice.
+Step 4) Testa con input minimo + 1 caso limite.
+Step 5) Se sbagli: applica DEBUG RAPIDO D0–D6.
+
+Se vuoi: incollami la tua soluzione di uno qualunque (anche incompleta) e te la correggo
+mantenendo il tuo stile (come hai chiesto altre volte), evidenziando “errore tipico → fix”.
