@@ -9,47 +9,39 @@
 #-3,8,1     0
 from sys import argv
 
-def comma_separated_numbers():
+# controllo argomenti
+if len(argv) != 3:
+    print("Usage: python script.py <threshold> <output_file>")
+    exit()
+
+threshold = int(argv[1])
+filename = argv[2]
+
+f = open(filename, 'w')
+
+while True:
     line = input('Enter numbers separated by comma (empty to stop): ').strip()
+
     if line == "":
-        return None
+        break
+
     parts = line.split(',')
     numbers = []
-    for p in parts:
-        numbers.append(int(p))
-        
-    return numbers
 
+    try:
+        for p in parts:
+            numbers.append(int(p))
+    except ValueError:
+        print("Please enter only integers.")
+        continue
 
-def product_over_threshold(numbers, threshold):
     count = 0
     for i in range(len(numbers)):
         for j in range(i + 1, len(numbers)):
             if numbers[i] * numbers[j] > threshold:
                 count += 1
-    return count
 
+    f.write(str(count))
+    f.write("\n")
 
-def write_file():
-    if len(argv) != 3:
-        print("Usage: python script.py <threshold> <output_file>")
-        return
-    threshold = int(argv[1])
-    filename = argv[2]
-    f = open(filename, 'w')
-    while True:
-        try:
-            numbers = comma_separated_numbers()
-        except ValueError:
-            print("Please enter only integers.")
-            continue
-        if numbers is None:
-            break
-        count = product_over_threshold(numbers, threshold)
-        f.write(str(count))
-        f.write("\n")
-    f.close()
-
-def main():
-    write_file()
-main()
+f.close()
