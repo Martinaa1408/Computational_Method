@@ -1,6 +1,5 @@
-#EXERCISE B
-#Write a python program that takes from file 'guess.txt' a single line containing space-separated integers. 
-#The user plays the following  game: he insert a number, and needs to guess the sum of two numbers in the line. 
+'''#Write a python program that takes from file 'guess.txt' a single line containing space-separated integers.
+#The user plays the following  game: he insert a number, and needs to guess the sum of two numbers in the line.
 #If the guess is correct, he is congratulated with 'You win' and the game ends. If the guess is wrong, he has to retry but gets: 'upper' if all possible sums are higher than the guessed number, 'lower' if tehy are all lower and 'try again' otherwise
 #sample execution
 #input file:
@@ -12,64 +11,42 @@
 #try again
 #25
 #you win
+'''
 
 from sys import argv
+input_file=open(argv[1],'r')
+collections=[]
+for line in input_file:
+    line=line.strip().split()
+    if line=='':
+        continue
+    else:
+        for p in line:
+            collections.append(int(p))
+input_file.close()
+print(collections)
 
-def read_numbers(filename):
-    f = open(filename, "r")
-    line = ""
-    for l in f:
-        line = l.strip()
-    f.close()
-
-    parts = line.split()
-    numbers = []
-
-    for p in parts:
-        numbers.append(int(p))
-
-    return numbers
+possible_sum=[]
+for i in range(len(collections)):
+    for j in range(i+1,len(collections)):
+        sum=collections[i]+collections[j]
+        possible_sum.append(sum)
+print(possible_sum)
 
 
-def main():
-    if len(argv) != 2:
-        print("Usage: python script.py <input_file>")
-        return
+while True:
+    guess=int(input('insert a number to guess:'))
+    if guess in possible_sum:
+        print('you win')
+        break
+    elif guess<min(possible_sum):
+        print('upper')
+    elif guess>max(possible_sum):
+        print('lower')
+    else:
+        print('try again')
+        continue
 
-    filename = argv[1]
-    numbers = read_numbers(filename)
 
-    possible_sums = []
-    for i in range(len(numbers)):
-        for j in range(i + 1, len(numbers)):
-            s = numbers[i] + numbers[j]
-            possible_sums.append(s)
 
-    min_sum = possible_sums[0]
-    max_sum = possible_sums[0]
 
-    for v in possible_sums:
-        if v < min_sum:
-            min_sum = v
-        if v > max_sum:
-            max_sum = v
-
-    while True:
-        guess_str = input("Enter a number: ")
-        try:
-            guess = int(guess_str)
-        except:
-            print("Please enter an integer.")
-            continue
-
-        if guess in possible_sums:
-            print("You win")
-            break
-        elif guess < min_sum:
-            print("lower")
-        elif guess > max_sum:
-            print("upper")
-        else:
-            print("try again")
-
-main()
