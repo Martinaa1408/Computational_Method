@@ -18,91 +18,53 @@
 #Output file max.txt:
 #2 5
 #4 6 9
+
 from sys import argv
+input_file=open(argv[1],'r')
+output_min=open(argv[2],'w')
+output_max=open(argv[3],'w')
+option=(argv[4]).upper()
+numbers=[]
+for line in input_file:
+    line=line.strip().split()
+    if line=='':
+        continue
+    else:
+        for p in line:
+            numbers.append(int(p))
+local_max = []
+local_min = []
+# middle numbers
+for i in range(1, len(numbers) - 1):
+    if numbers[i] > numbers[i + 1] and numbers[i] > numbers[i - 1]:
+        local_max.append((numbers[i]))
+    elif numbers[i] < numbers[i + 1] and numbers[i] < numbers[i - 1]:
+        local_min.append((numbers[i]))
+# at beginning
+if numbers[0] < numbers[1]:
+    local_min.append(numbers[0])
+elif numbers[0] > numbers[1]:
+    local_max.append(numbers[0])
+# at the end
+if numbers[-1] > numbers[-2]:
+    local_max.append(numbers[-1])
+elif numbers[-1] < numbers[-2]:
+    local_min.append(numbers[-1])
+print(local_min)
+print(local_max)
 
-def main(input_file, output_min, output_max, option):
+#list comprhension
+str_max = ' '.join([str(x) for x in local_max])
+str_min = ' '.join([str(x) for x in local_min])
 
-    for raw_line in input_file:
-        raw_line = raw_line.strip()
+if option == 'MIN':
+    output_min.write(str(str_min) + '\n')
+elif option == 'MAX':
+    output_max.write(str(str_max) + '\n')
+else:
+    output_min.write(str(str_min) + '\n')
+    output_max.write(str(str_max) + '\n')
 
-        if raw_line == "":
-            if option == "MIN" or option == "BOTH":
-                output_min.write("\n")
-            if option == "MAX" or option == "BOTH":
-                output_max.write("\n")
-            continue
-
-        parts = raw_line.split()
-        nums = []
-
-        for p in parts:
-            nums.append(int(p))
-
-        min_list = []
-        max_list = []
-
-        # -------- FIRST ELEMENT --------
-        if nums[0] < nums[1]:
-            min_list.append(nums[0])
-        elif nums[0] > nums[1]:
-            max_list.append(nums[0])
-
-        # -------- CENTRAL ELEMENTS --------
-        for pos in range(1, len(nums) - 1):
-            if nums[pos] < nums[pos - 1] and nums[pos] < nums[pos + 1]:
-                min_list.append(nums[pos])
-            elif nums[pos] > nums[pos - 1] and nums[pos] > nums[pos + 1]:
-                max_list.append(nums[pos])
-
-        # -------- LAST ELEMENT --------
-        if nums[-1] < nums[-2]:
-            min_list.append(nums[-1])
-        elif nums[-1] > nums[-2]:
-            max_list.append(nums[-1])
-
-        # Convert numbers to string
-        min_line = ""
-        max_line = ""
-
-        for x in min_list:
-            min_line += str(x) + " "
-
-        for x in max_list:
-            max_line += str(x) + " "
-
-        min_line = min_line.strip()
-        max_line = max_line.strip()
-
-        # -------- OPTION HANDLING --------
-        if option == "MIN":
-            output_min.write(min_line + "\n")
-
-        elif option == "MAX":
-            output_max.write(max_line + "\n")
-
-        else:   # BOTH
-            output_min.write(min_line + "\n")
-            output_max.write(max_line + "\n")
-
-
-def file():
-    """Gestisce apertura file e errori."""
-    try:
-        option = input("Enter MIN, MAX, BOTH: ").strip().upper()
-
-        input_file = open(argv[1], "r")
-        output_min = open("min.txt", "w")
-        output_max = open("max.txt", "w")
-
-        main(input_file, output_min, output_max, option)
-
-        input_file.close()
-        output_min.close()
-        output_max.close()
-
-    except FileNotFoundError:
-        print("File not found.")
-    except IndexError:
-        print("Usage: python script.py <input_file>")
-
-file()
+input_file.close() 
+output_min.close()
+output_max.close()
