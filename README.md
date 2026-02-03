@@ -19,9 +19,6 @@ This repository collects **materials, scripts, and notebooks** related to **comp
 - **Manfredi/**  
   Includes Python code and exam preparation focused on algorithms and biological sequence analysis, such as Needleman-Wunsch and Smith-Waterman implementations.
 
-- **latex_python.pdf**  
-  A LaTeX-formatted PDF containing selected solved exercises, summaries, and theoretical explanations.
-
 - **README.md**  
   This file.
 
