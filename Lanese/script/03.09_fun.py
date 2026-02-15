@@ -94,3 +94,59 @@ def add_to_basket(products, basket):
     if code not in products:
         print('warning: product not found')
         return basket, False
+
+    name, price = products[code]
+    print('Added:', name, '($' + str(price) + ')')
+    basket[code] = basket.get(code, 0) + 1
+    return basket, False
+
+
+def print_bill(products, basket):
+    print('\n--- Your Bill ---')
+    print('Quantity        Product                  Subtotal')
+    print('--------------------------------------------------')
+
+    total = 0.0
+    for code in basket:
+        qty = basket[code]
+        name, price = products[code]
+        subtotal = qty * price
+        total += subtotal
+        print(str(qty).ljust(15) + name.ljust(25) + ('%.2f' % subtotal).rjust(10))
+
+    print('--------------------------------------------------')
+    print('Total:' + ('%.2f' % total).rjust(39))
+    print('-------------------\n')
+
+
+def session(products):
+    print('--- Starting a new session ---')
+    print('Enter product codes, or 0 to end.')
+
+    basket = {}
+
+    while True:
+        basket, ended = add_to_basket(products, basket)
+        if ended:
+            print('Session ended. Printing the bill.')
+            print_bill(products, basket)
+            break
+
+
+def main():
+    products = read_products(filename)
+
+    while True:
+        session(products)
+        ans = input('Start a new session? (y/n): ').strip().lower()
+        if ans != 'y':
+            print('Closing the program. Thank you!')
+            break
+
+
+if __name__ == '__main__':
+    from sys import argv
+    if len(argv) != 2:
+        exit()
+    filename = argv[1]
+    main()
