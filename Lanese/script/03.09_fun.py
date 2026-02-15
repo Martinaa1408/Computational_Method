@@ -79,44 +79,24 @@ def read_products(filename):
     return products
 
 
-def add_to_basket(products, basket):
-    code_str = input('Enter product code: ').strip()
-
-    if not code_str.isdigit():
-        print('warning: invalid code')
-        return basket, False
-
-    code = int(code_str)
-
-    if code == 0:
-        return basket, True
-
-    if code not in products:
-        print('warning: product not found')
-        return basket, False
-
-    name, price = products[code]
-    print('Added:', name, '($' + str(price) + ')')
-    basket[code] = basket.get(code, 0) + 1
-    return basket, False
-
-
 def print_bill(products, basket):
     print('\n--- Your Bill ---')
-    print('Quantity        Product                  Subtotal')
-    print('--------------------------------------------------')
+    print('Quantity | Product | Subtotal')
+    print('-------------------------------')
 
     total = 0.0
+
     for code in basket:
         qty = basket[code]
         name, price = products[code]
         subtotal = qty * price
         total += subtotal
-        print(str(qty).ljust(15) + name.ljust(25) + ('%.2f' % subtotal).rjust(10))
 
-    print('--------------------------------------------------')
-    print('Total:' + ('%.2f' % total).rjust(39))
-    print('-------------------\n')
+        print(qty, '|', name, '|', subtotal)
+
+    print('-------------------------------')
+    print('Total:', total)
+    print('-------------------------------')
 
 
 def session(products):
@@ -126,11 +106,27 @@ def session(products):
     basket = {}
 
     while True:
-        basket, ended = add_to_basket(products, basket)
-        if ended:
+        code_str = input('Enter product code: ').strip()
+
+        if not code_str.isdigit():
+            print('warning: invalid code')
+            continue
+
+        code = int(code_str)
+
+        if code == 0:
             print('Session ended. Printing the bill.')
             print_bill(products, basket)
             break
+
+        if code not in products:
+            print('warning: product not found')
+            continue
+
+        name, price = products[code]
+        print('Added:', name, '($', price, ')')
+
+        basket[code] = basket.get(code, 0) + 1
 
 
 def main():
@@ -150,3 +146,7 @@ if __name__ == '__main__':
         exit()
     filename = argv[1]
     main()
+
+    
+    
+            
