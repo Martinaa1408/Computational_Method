@@ -26,59 +26,75 @@ Do you want to play again Y/N? N
 
 '''
 
-from sys import argv
-input_file = open(argv[1], 'r')
+def read_and_transform(filename):
 
-guess_word = []
-for line in input_file:
-    line = line.rstrip().upper()
-    if line == '':
-        continue
-    for p in line:
-        guess_word.append(p)
+    try:
+        with open(filename) as reader:
+            for line in reader:
+                word = line.strip().upper()
+                if word != "":
 
-input_file.close()
+                    vowels = "AEIOU"
+                    mask = ""
 
-print(guess_word) #check
+                    for ch in word:
+                        if ch in vowels:
+                            mask += "+"
+                        else:
+                            mask += "-"
 
-vowels = 'AEIOU'
-consonants = 'BCDFGHJKLMNPQRSTVWXYZ'
+                    return word, mask
 
-# text is the scheme
-text = []
-for i in range(len(guess_word)):
-    if guess_word[i] in vowels:
-        text.append('+')
-    elif guess_word[i] in consonants:
-        text.append('-')
-    else:
-        text.append('?')
+    except FileNotFoundError:
+        exit()
 
-print(''.join(text)) #check scheme
+def main():
 
-tries = 0
-while True:
-    user = input('Insert a letter or guess the word:').strip().upper()
-    if user == '':
-        continue
+    word, mask = read_and_transform(filename)
 
-    tries += 1
+    tries = 0
+    print(mask)
 
-    # word
-    if len(user) > 1:
-        if user == ''.join(guess_word):
-            print('You win! In', tries, 'tries!')
-            repeat = input('Do you want to play again Y/N?').strip().upper()
-            if repeat != 'Y':
-                break                   
-        else:
-            print('Nice try! ... but wrong...')
-            print(''.join(text))
-            continue               
+    while True:
 
-    # single letter
-    for pos in range(len(guess_word)):
-        if guess_word[pos] == user:
-            text[pos] = user
+        tentative = input("Insert a letter or guess the word: ").strip().upper()
 
-    print(''.join(text))
+        if tentative == "":
+            continue
+
+        tries += 1
+
+        # prova parola intera
+        if len(tentative) > 1:
+
+            if tentative == word:
+                print("You win! In", tries, "tries!")
+                break
+            else:
+                print("Nice try! ... but wrong...")
+                print(mask)
+                continue
+
+        # lettera singola
+        letter = tentative
+        new_mask = ""
+
+        for i in range(len(word)):
+            if word[i] == letter:
+                new_mask += letter
+            else:
+                new_mask += mask[i]
+
+        mask = new_mask
+        print(mask)
+
+if __name__ == "__main__":
+    from sys import argv
+    if len(argv) != 2:
+        exit()
+
+    filename = argv[1]
+    main()
+
+
+
