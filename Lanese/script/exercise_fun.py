@@ -15,65 +15,72 @@ Output
 100+3+12+2=117
 2=2   '''
 
+def read_file(filename):
+    lines = []
+    try:
+        with open(filename) as f:
+            for line in f:
+                line = line.strip()
+                if line != "":
+                    lines.append(line)
+    except FileNotFoundError:
+        print("warning: file not found")
+        exit()
+    return lines
 
-def eval_expr(expr):
-    operator = '+-'
-    numbers = '0123456789'
 
-    parts = ''.join(expr.strip().split())
-    if parts == '':
-        return None, None
-
-    tot = 0
-    num = ""
-    sign = 1
-
-    for el in parts:
-        if el in numbers:
-            num += el
-        elif el in operator:
-            tot += sign * int(num)
-            num = ""
-            if el == '+':
-                sign = 1
-            else:
-                sign = -1
-
-    tot += sign * int(num)
-    return parts, tot
+def write_file(filename, results):
+    with open(filename, "w") as f:
+        for line in results:
+            f.write(line + "\n")
 
 
 def main():
-    try:
-        file_inp = open(in_filename, 'r')
-    except FileNotFoundError:
-        exit()
+    lines = read_file(argv[1])
+    results = []
 
-    results = ""
+    for expr in lines:
 
-    for line in file_inp:
-        expr, value = eval_expr(line)
-        if expr is None:
-            continue
-        results += expr + "=" + str(value) + "\n"
+        total = 0
+        num = ""
+        op = "+"   # operatore iniziale
 
-    file_inp.close()
+        for ch in expr:
 
-    if out_filename == '':
-        print(results, end='')
-    else:
-        with open(out_filename, 'w') as out:
-            out.write(results)
+            if ch.isdigit():
+                num += ch
+
+            elif ch == "+" or ch == "-":
+
+                if op == "+":
+                    total += int(num)
+                else:
+                    total -= int(num)
+
+                op = ch      # aggiorno operatore
+                num = ""
+
+        # aggiungo l'ultimo numero
+        if op == "+":
+            total += int(num)
+        else:
+            total -= int(num)
+
+        results.append(expr + "=" + str(total))
+
+    return results
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     from sys import argv
     if len(argv) != 2 and len(argv) != 3:
+        print("usage: python3 script.py source.txt [output.txt]")
         exit()
 
-    in_filename = argv[1]
-    out_filename = ''
-    if len(argv) == 3:
-        out_filename = argv[2]
+    results = main()
 
-    main()
+    if len(argv) == 3:
+        write_file(argv[2], results)
+    else:
+        for line in results:
+            print(line)
