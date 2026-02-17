@@ -17,51 +17,61 @@ False
 True
 False'''
 
-def read_numbers_from_line(line):
-    parts = line.strip().split()
-    if parts == []:
-        return []
-    numbers = []
-    for p in parts:
-        numbers.append(int(p))
-    return numbers
+
+def read_file(filename):
+    rows = []
+
+    try:
+        with open(filename) as f:
+            for line in f:
+                if line.strip() != "":
+                    parts = line.strip().split()
+                    numbers = []
+                    for p in parts:
+                        numbers.append(int(p))
+
+                    rows.append(numbers)
+
+    except FileNotFoundError:
+        exit()
+
+    print(rows)
+    return rows
 
 
 def has_pair_sum(numbers, n):
     found = False
+
     for i in range(len(numbers)):
         for j in range(i + 1, len(numbers)):
             if numbers[i] + numbers[j] == n:
                 found = True
-                break
-        if found:
-            break
+
     return found
 
 
 def main():
-    try:
-        input_file = open(filename, 'r')
-    except FileNotFoundError:
-        exit()
+    rows = read_file(filename)
 
-    for line in input_file:
-        if line.strip() == '':
+    for numbers in rows:
+
+        user = input("insert a number to guess: ")
+
+        if not user.isdigit():
+            print("must be integer")
             continue
 
-        numbers = read_numbers_from_line(line)
-        print(numbers)
+        n = int(user)
 
-        n = int(input('insert a number to guess: '))
         found = has_pair_sum(numbers, n)
         print(found)
 
-    input_file.close()
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     from sys import argv
+
     if len(argv) != 2:
         exit()
+
     filename = argv[1]
     main()
