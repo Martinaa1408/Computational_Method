@@ -117,7 +117,7 @@ def session(products):
         if code == 0:
             print('Session ended. Printing the bill.')
             print_bill(products, basket)
-            break
+            return
 
         if code not in products:
             print('warning: product not found')
