@@ -12,11 +12,11 @@ This repository collects **materials, scripts, and notebooks** related to **comp
 
 ## Repository Structure
 
-- **Lanese/**  
+- **Module_1/**  
   Contains exercises, scripts, and exam materials from the module by Prof. Lanese.  
   Includes Python practice problems and exam questions related to basic control structures, string and list manipulation, file handling, and exception management.
 
-- **Manfredi/**  
+- **Module_2/**  
   Includes Python code and exam preparation focused on algorithms and biological sequence analysis, such as Needleman-Wunsch and Smith-Waterman implementations.
 
 - **README.md**  
