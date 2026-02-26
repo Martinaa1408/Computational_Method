@@ -60,7 +60,7 @@ Feel free to fork it or suggest improvements via issues.
 
 ## Credits
 
-- Materials based on coursework from professors **Ivan Lanese** and **Mattia Manfredi**
+- Materials based on coursework 
 - Maintained by [Martinaa1408](https://github.com/Martinaa1408)
 
 ---
