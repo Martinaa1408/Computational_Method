@@ -1,3 +1,39 @@
+'''"""
+Write a Python program that takes strings representing chemical reactions
+from a file whose name is taken as a command line parameter and determines
+whether each reaction is balanced (i.e., the number of atoms for each element
+is identical on both the reactant and product sides).
+
+If the reaction is not balanced, the program must also show which elements
+are needed or in excess to make it balanced.
+
+Assume the following syntax for the reaction file:
+- Only single-character element symbols and numbers are allowed.
+- Parentheses are not allowed.
+- Examples like 12H2O are allowed.
+- Expressions like C6H12O6 are allowed.
+- Expressions with parentheses like Ca(OH)2 are disallowed.
+
+Example input file:
+2H2 + O2 -> 2H2O
+CH4 + 2O2 -> CO2 + 2H2O
+H2O2 -> H2O + O2
+
+Expected output on screen for the input file above:
+
+Reaction: 2H2 + O2 -> 2H2O
+Status: Balanced
+
+Reaction: CH4 + 2O2 -> CO2 + 2H2O
+Status: Balanced
+
+Reaction: H2O2 -> H2O + O2
+Status: Unbalanced
+Element  Reactants  Products  Difference
+H        2          2         0
+O        2          3        -1
+"""  '''
+
 import sys
 
 def count_side(side):
@@ -93,3 +129,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
